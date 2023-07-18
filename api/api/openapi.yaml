@@ -1,57 +1,123 @@
-openapi: 3.0.3
+openapi: 3.0.0
 info:
-  description: XXXについてのAPI
-  title: XXX API
-  version: 0.0.1
+  license:
+    name: MIT
+  title: Swagger Petstore
+  version: 1.0.0
 servers:
-- url: /
-tags:
-- description: Login
-  name: Login
+- url: http://petstore.swagger.io/v1
 paths:
-  /login:
+  /pets:
     get:
-      description: ログイン
-      operationId: startLogin
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/loginBody'
+      operationId: listPets
+      parameters:
+      - description: How many items to return at one time (max 100)
+        explode: true
+        in: query
+        name: limit
+        required: false
+        schema:
+          format: int32
+          maximum: 100
+          type: integer
+        style: form
       responses:
         "200":
-          description: OK
-        "400":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/defaultErrorResponse'
-          description: Bad Request
-      summary: Login
+                $ref: '#/components/schemas/Pets'
+          description: A paged array of pets
+          headers:
+            x-next:
+              description: A link to the next page of responses
+              explode: false
+              schema:
+                type: string
+              style: simple
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: unexpected error
+      summary: List all pets
       tags:
-      - Login
+      - pets
+    post:
+      operationId: createPets
+      responses:
+        "201":
+          description: Null response
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: unexpected error
+      summary: Create a pet
+      tags:
+      - pets
+  /pets/{petId}:
+    get:
+      operationId: showPetById
+      parameters:
+      - description: The id of the pet to retrieve
+        explode: false
+        in: path
+        name: petId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+          description: Expected response to a valid request
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: unexpected error
+      summary: Info for a specific pet
+      tags:
+      - pets
 components:
   schemas:
-    loginBody:
+    Pet:
+      example:
+        name: name
+        id: 0
+        tag: tag
       properties:
         id:
+          format: int64
+          type: integer
+        name:
           type: string
-      type: object
-    defaultErrorResponse:
-      properties:
-        errors:
-          items:
-            $ref: '#/components/schemas/defaultErrorResponse_errors_inner'
-          type: array
+        tag:
+          type: string
       required:
-      - errors
+      - id
+      - name
       type: object
-    defaultErrorResponse_errors_inner:
+    Pets:
+      items:
+        $ref: '#/components/schemas/Pet'
+      maxItems: 100
+      type: array
+    Error:
       properties:
+        code:
+          format: int32
+          type: integer
         message:
           type: string
-        detail:
-          type: object
       required:
+      - code
       - message
       type: object
