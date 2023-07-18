@@ -1,0 +1,57 @@
+openapi: 3.0.3
+info:
+  description: XXXについてのAPI
+  title: XXX API
+  version: 0.0.1
+servers:
+- url: /
+tags:
+- description: Login
+  name: Login
+paths:
+  /login:
+    get:
+      description: ログイン
+      operationId: startLogin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/loginBody'
+      responses:
+        "200":
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/defaultErrorResponse'
+          description: Bad Request
+      summary: Login
+      tags:
+      - Login
+components:
+  schemas:
+    loginBody:
+      properties:
+        id:
+          type: string
+      type: object
+    defaultErrorResponse:
+      properties:
+        errors:
+          items:
+            $ref: '#/components/schemas/defaultErrorResponse_errors_inner'
+          type: array
+      required:
+      - errors
+      type: object
+    defaultErrorResponse_errors_inner:
+      properties:
+        message:
+          type: string
+        detail:
+          type: object
+      required:
+      - message
+      type: object

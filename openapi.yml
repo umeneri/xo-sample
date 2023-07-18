@@ -1,0 +1,54 @@
+# api.yaml
+openapi: 3.0.3
+info:
+  version: 0.0.1
+  title: XXX API
+  description: XXXについてのAPI
+tags:
+  - name: Login
+    description: Login
+paths:
+  /login:
+    get:
+      summary: Login
+      description: ログイン
+      tags:
+        - Login
+      operationId: startLogin
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/defaultErrorResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/loginBody'
+components:
+  schemas:
+    loginBody:
+      type: object
+      properties:
+        id:
+          type: string
+    defaultErrorResponse:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              message:
+                type: string
+              detail:
+                type: object
+            required:
+              - message
+      required:
+        - errors
